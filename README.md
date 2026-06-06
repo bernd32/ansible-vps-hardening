@@ -49,4 +49,5 @@ Because this playbook disables password login, if your SSH key is invalid, you c
 Before running the playbook, open a terminal window and SSH into your VPS:
 ```bash
 ssh root@<YOUR_VPS_IP>
+```
 (Or make a snapshot of your system before running this playbook)
