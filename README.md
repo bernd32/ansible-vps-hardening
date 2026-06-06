@@ -15,7 +15,7 @@ This Ansible playbook is designed to take a freshly rented, insecure Debian/Ubun
 
 ## ⚠️ Important Nuances & Safety Features
 
-* **Anti-Lockout Validation:** The playbook uses `validate: /usr/sbin/sshd -t -f %s` before applying changes to the SSH daemon. If the playbook makes a syntax error, SSH will refuse the change rather than crashing and locking you out. Or make a snapshot of your system before running this playbook. 
+* **Anti-Lockout Validation:** The playbook uses `validate: /usr/sbin/sshd -t -f %s` before applying changes to the SSH daemon. If the playbook makes a syntax error, SSH will refuse the change rather than crashing and locking you out. 
 * **Sudoers Best Practices:** Instead of modifying the main `/etc/sudoers` file (which can be risky and overwrite OS defaults), this playbook safely places a dedicated file in `/etc/sudoers.d/`.
 
 ---
@@ -49,3 +49,4 @@ Because this playbook disables password login, if your SSH key is invalid, you c
 Before running the playbook, open a terminal window and SSH into your VPS:
 ```bash
 ssh root@<YOUR_VPS_IP>
+(Or make a snapshot of your system before running this playbook)
