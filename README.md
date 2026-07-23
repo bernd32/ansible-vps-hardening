@@ -45,6 +45,7 @@ This Ansible playbook is designed to take a freshly rented, insecure Debian/Ubun
 2. Edit `vars.yml` and adjust the variables to your liking:
    * `new_user`: The name of the user you want to create (e.g., `adminuser`).
    * `ssh_public_key_path`: The path to your **local** public key (e.g., `~/.ssh/id_ed25519.pub`).
+3. Run the playbook: `ansible-playbook -i inventory.ini harden.yml -k`
 
 ### Step 2: Establish a "Lifeline" (CRITICAL SAFETY STEP)
 Because this playbook disables password login, if your SSH key is invalid, you could lock yourself out. 
