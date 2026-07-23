@@ -5,11 +5,12 @@ This Ansible playbook is designed to take a freshly rented, insecure Debian/Ubun
 ## What this playbook does:
 1. **System Updates:** Updates all system packages to their latest versions.
 2. **Installs Dependencies:** Installs `sudo`, `ufw` (Firewall), `fail2ban` (Intrusion Prevention), and `unattended-upgrades`.
-3. **User Management:** Creates a secure, non-root user and grants them passwordless `sudo` access (ideal for future Ansible automation).
-4. **SSH Keys:** Injects your local public SSH key into the new user's `authorized_keys`.
-5. **Firewall:** Enables UFW, blocking all incoming traffic except SSH.
-6. **Intrusion Prevention:** Enables Fail2Ban to automatically temporarily ban IPs that attempt to brute-force SSH.
-7. **Locks the Doors (SSH Hardening):** Disables `root` login and completely disables password-based authentication.
+3. **Installs Docker:** Configures Docker's official APT repository, installs Docker Engine with Buildx and Compose plugins, and enables the Docker service.
+4. **User Management:** Creates a secure, non-root user, grants them passwordless `sudo` access (ideal for future Ansible automation), and adds them to the `docker` group.
+5. **SSH Keys:** Injects your local public SSH key into the new user's `authorized_keys`.
+6. **Firewall:** Enables UFW, blocking all incoming traffic except SSH.
+7. **Intrusion Prevention:** Enables Fail2Ban to automatically temporarily ban IPs that attempt to brute-force SSH.
+8. **Locks the Doors (SSH Hardening):** Disables `root` login and completely disables password-based authentication.
 
 ---
 
@@ -17,6 +18,7 @@ This Ansible playbook is designed to take a freshly rented, insecure Debian/Ubun
 
 * **Anti-Lockout Validation:** The playbook uses `validate: /usr/sbin/sshd -t -f %s` before applying changes to the SSH daemon. If the playbook makes a syntax error, SSH will refuse the change rather than crashing and locking you out. 
 * **Sudoers Best Practices:** Instead of modifying the main `/etc/sudoers` file (which can be risky and overwrite OS defaults), this playbook safely places a dedicated file in `/etc/sudoers.d/`.
+* **Docker Access:** Membership in the `docker` group is effectively root-level access. Sign out and back in after the playbook runs before using Docker without `sudo`.
 
 ---
 

@@ -25,6 +25,51 @@
         state: present
 
     # ---------------------------------------------------------
+    # 1.1 DOCKER
+    # ---------------------------------------------------------
+    - name: Install Docker repository prerequisites
+      apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+
+    - name: Create directory for Docker APT keyring
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker APT signing key
+      get_url:
+        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: "deb [arch={{ deb_architecture[ansible_architecture] | default(ansible_architecture) }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+
+    - name: Install Docker Engine and plugins
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker is enabled and running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    # ---------------------------------------------------------
     # 2. USER MANAGEMENT
     # ---------------------------------------------------------
     - name: Create a new non-root user
@@ -40,6 +85,12 @@
         content: "{{ new_user }} ALL=(ALL) NOPASSWD: ALL\n"
         mode: '0440'
         validate: '/usr/sbin/visudo -cf %s'
+
+    - name: Add new user to the Docker group
+      user:
+        name: "{{ new_user }}"
+        groups: docker
+        append: yes
 
     # ---------------------------------------------------------
     # 3. SSH KEY SETUP
