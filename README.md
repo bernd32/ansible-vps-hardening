@@ -25,7 +25,6 @@ This Ansible playbook is designed to take a freshly rented, insecure Debian/Ubun
 ## Requirements
 
 **On your Local Machine:**
-* [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) installed.
 * `sshpass` installed (required for Ansible to log in with a password the very first time). 
   * *Ubuntu/Debian:* `sudo apt install sshpass`
   * *macOS:* `brew install sshpass`
@@ -33,8 +32,8 @@ This Ansible playbook is designed to take a freshly rented, insecure Debian/Ubun
   `ssh-keygen -t ed25519 -C "vps-admin"`
 
 **On your Remote VPS:**
-* A fresh Debian or Ubuntu installation.
-* You must know the server's IP address and the `root` password.
+* You should have access to the root user 
+* Edit `/etc/ssh/sshd_config` and permit root login
 
 ---
 

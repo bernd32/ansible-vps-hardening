@@ -15,13 +15,15 @@
         upgrade: dist
         cache_valid_time: 3600
 
-    - name: Install essential security packages
+    - name: Install essential packages
       apt:
         name:
           - ufw
           - fail2ban
           - unattended-upgrades
           - sudo
+          - vim
+          - jq
         state: present
 
     # ---------------------------------------------------------
