@@ -15,15 +15,13 @@
         upgrade: dist
         cache_valid_time: 3600
 
-    - name: Install essential packages
+    - name: Install essential security packages
       apt:
         name:
           - ufw
           - fail2ban
           - unattended-upgrades
           - sudo
-          - vim
-          - jq
         state: present
 
     # ---------------------------------------------------------
@@ -133,15 +131,6 @@
     # ---------------------------------------------------------
     # 5. SSH HARDENING
     # ---------------------------------------------------------
-    - name: Disable Root Login via SSH
-      lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^#?PermitRootLogin'
-        line: 'PermitRootLogin no'
-        state: present
-        validate: /usr/sbin/sshd -t -f %s
-      notify: Restart SSH
-
     - name: Disable Password Authentication via SSH
       lineinfile:
         path: /etc/ssh/sshd_config
@@ -156,6 +145,60 @@
         path: /etc/ssh/sshd_config
         regexp: '^#?PermitEmptyPasswords'
         line: 'PermitEmptyPasswords no'
+        state: present
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Restart SSH
+
+    - name: Disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Restart SSH
+
+    - name: Enable public key authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PubkeyAuthentication'
+        line: 'PubkeyAuthentication yes'
+        state: present
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Restart SSH
+
+    - name: Disable X11 forwarding
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?X11Forwarding'
+        line: 'X11Forwarding no'
+        state: present
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Restart SSH
+
+    - name: Limit SSH authentication attempts
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?MaxAuthTries'
+        line: 'MaxAuthTries 3'
+        state: present
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Restart SSH
+
+    - name: Configure SSH client keepalive interval
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?ClientAliveInterval'
+        line: 'ClientAliveInterval 300'
+        state: present
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Restart SSH
+
+    - name: Restrict SSH access to the automation user
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?AllowUsers'
+        line: 'AllowUsers {{ new_user }}'
         state: present
         validate: /usr/sbin/sshd -t -f %s
       notify: Restart SSH
@@ -175,7 +218,7 @@
   handlers:
     - name: Restart SSH
       systemd:
-        name: sshd
+        name: "{{ ssh_service_name }}"
         state: restarted
 
     - name: Restart UFW

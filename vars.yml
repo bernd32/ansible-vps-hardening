@@ -16,3 +16,5 @@ ssh_port: "22"
 deb_architecture:
   x86_64: amd64
   aarch64: arm64
+
+ssh_service_name: "{{ 'ssh' if ansible_facts['distribution'] == 'Ubuntu' else 'sshd' }}"
